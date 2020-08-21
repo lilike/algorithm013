@@ -26,41 +26,55 @@ public class DfsCodec {
      * @return
      */
     public String serialize(TreeNode root) {
-        List<String> list = new ArrayList<>();
-        dfs(root,list);
-        return list.stream().collect(Collectors.joining(","));
+
+        // 序列化采用深度优先搜索
+        List<Integer> res = new ArrayList<>();
+        dfs(root,res);
+        return res.stream().map(x -> x == null ? "null" : String.valueOf(x) ).collect(Collectors.joining(","));
     }
 
-    private void dfs(TreeNode root, List<String> list) {
+    private void dfs(TreeNode root, List<Integer> res) {
+        // terminator
         if (root == null) {
-            list.add("null");
+            res.add(null);
             return;
         }
 
-        list.add(root.val+"");
-        dfs(root.left,list);
-        dfs(root.right,list);
+        // process current logic
+        res.add(root.val);
+
+        // drill down
+        dfs(root.left,res);
+        dfs(root.right,res);
     }
+
 
     // Decodes your encoded data to tree.
     public TreeNode deserialize(String data) {
 
-        String[] split = data.split(",");
-        TreeNode treeNode = dfsDesrialize(new LinkedList<>(Arrays.asList(split)));
-        return treeNode;
+        List<String> res = new LinkedList<>(Arrays.asList(data.split(",")));
+
+        return dfsDeserialize(res);
     }
 
-    private TreeNode dfsDesrialize(List<String> asList) {
-        if (asList.size() == 0) {
-            return null;
-        }
-        String remove = asList.remove(0);
-        if ("null".equals(remove)) return null;
+    private TreeNode dfsDeserialize(List<String> res) {
 
-        TreeNode root = new TreeNode(Integer.valueOf(remove));
-        root.left = dfsDesrialize(asList);
-        root.right = dfsDesrialize(asList);
-        return root;
+        // terminator
+        if (res.size() == 0) return null;
+
+        // process current logic
+        String val = res.remove(0);
+
+        TreeNode node = null;
+        if (val.equals("null")) {
+            return node;
+        }else {
+            node = new TreeNode(Integer.valueOf(val));
+            // drill down
+            node.left = dfsDeserialize(res);
+            node.right = dfsDeserialize(res);
+        }
+        return node;
     }
 
     public static void main(String[] args) {
