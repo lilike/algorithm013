@@ -13,27 +13,60 @@ public class ReverseList {
 
     /**
      * 迭代
+     *  首先使用迭代的的方式进行处理
+     *      分别需要三个指针
+     *          head next newHead
+     *          newHead 初始化为 null
+     *
+     *          ListNode next = head.next;
+     *          head.next = newHead;
+     *          newHead = head;
+     *          head = next;
+     *
+     *
      * @param head
      * @return
      */
     public ListNode reverseList(ListNode head) {
-        if (head == null) return head;
-        Stack<ListNode> stack = new Stack<>();
+
+        ListNode newHead = null;
         while (head != null) {
-            stack.push(head);
-            head = head.next;
+            ListNode next = head.next;
+            head.next = newHead;
+            newHead = head;
+            head = next;
         }
-        ListNode pop = stack.pop();
-        ListNode h = pop;
-        while (!stack.isEmpty()) {
-            h.next = stack.pop();
-            h = h.next;
-        }
-        h.next = null;
-        return pop;
+        return newHead;
+
     }
 
+    /**
+     * 递归的操作更加简单
+     * @param head
+     * @return
+     */
+    public ListNode reverseListRecursion(ListNode head) {
+        return dg(head,null);
+    }
 
+    private ListNode dg(ListNode head, ListNode newHead) {
+        if (head == null) return newHead;
+        ListNode next = head.next;
+        head.next = newHead;
+        return dg(next,head);
+    }
+
+    public static void main(String[] args) {
+
+        ListNode l5 = new ListNode(1);
+        ListNode l4 = new ListNode(4,l5);
+        ListNode l3 = new ListNode(3,l4);
+        ListNode l2 = new ListNode(2,l3);
+        ListNode l1 = new ListNode(1,l2);
+
+        System.out.println(new ReverseList().reverseListRecursion(l1).val);
+
+    }
 
 
 }
